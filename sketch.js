@@ -10,10 +10,12 @@ let manPosY = 5;
 let beecolor = [];
 let mancolor = 0;
 let score = 0;
+let song1;
 let level = 1;
 /* map对应的物体  0 什么都没有  1 豆子  2 人  3 墙壁 */
 
 function preload() {
+	song1 = loadSound('bg.mp3'); 
 }
 
 /* init function */
@@ -25,6 +27,7 @@ function setup() {
 	beecolor[2] = color(0, 204, 0);
 	beecolor[3] = color(0, 0, 255);
 	frameRate(5);
+	song1.loop();
 }
 
 /* loop draw function */
@@ -159,3 +162,357 @@ class Map{
 				}
 				dt[manPosY*this.col+manPosX] = 2;
 			}
+		}
+		//方向键 向上
+		if (keyCode === UP_ARROW) 
+		{
+			manDir = 2;
+			if(manPosX===0){}
+			else
+			{
+				dt[manPosY*this.col+manPosX] = 0;
+				manPosX = manPosX - 1;
+				if(dt[manPosY*this.col+manPosX] === 3)
+				{
+					manPosX = manPosX + 1;
+					
+				}
+				else
+				{
+					if(dt[manPosY*this.col+manPosX] === 1)
+					{
+						//豆子 得分增加  颜色改变
+						mancolor = dtcolr[manPosY*this.col+manPosX]
+						score = score+1;
+					}
+				}
+				dt[manPosY*this.col+manPosX] = 2;
+			}
+		}
+		//方向键 向下
+		if (keyCode === DOWN_ARROW) 
+		{
+			manDir = 3;
+			if(manPosX===(this.col-1)){}
+			else
+			{
+				dt[manPosY*this.col+manPosX] = 0;
+				manPosX = manPosX + 1;
+				if(dt[manPosY*this.col+manPosX] === 3)
+				{
+					manPosX = manPosX - 1;
+					
+				}
+				else
+				{
+					if(dt[manPosY*this.col+manPosX] === 1)
+					{
+						//豆子 得分增加  颜色改变
+						mancolor = dtcolr[manPosY*this.col+manPosX]
+						score = score+1;
+					}
+				}
+				dt[manPosY*this.col+manPosX] = 2;
+			}
+		}
+		keyCode = 0;
+	}
+	
+	draw(){
+		for(let i = 0; i < this.ln; i++)
+		{
+			for(let j = 0; j < this.col; j++)
+			{
+				if(dt[i*this.col+j] ===0)
+				{
+					//空
+				}
+				else if(dt[i*this.col+j] ===1)
+				{//豆子
+					stroke(beecolor[dtcolr[i*this.col+j]]); // Change the color
+					fill(beecolor[dtcolr[i*this.col+j]]);
+					strokeWeight(1); // Make the points 1 pixels in size
+					circle(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth/6);
+				}
+				else if(dt[i*this.col+j] ===2)
+				{//人
+					stroke(beecolor[mancolor]); // Change the color
+					fill(beecolor[mancolor]);
+					strokeWeight(1); // Make the points 1 pixels in size
+					//circle(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth-3);
+					if(manDir === 0)
+					{//左
+						arc(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth-3,mapwidth-3, PI+QUARTER_PI, PI - QUARTER_PI);
+						stroke(0); // Change the color
+						fill(0);
+						circle((i*mapwidth+mapwidth/2)+3, (j*mapwidth+mapwidth/2)-5,2);
+					}
+					else if(manDir === 1)
+					{//右
+						arc(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth-3,mapwidth-3, QUARTER_PI, TWO_PI - QUARTER_PI);
+						stroke(0); // Change the color
+						fill(0);
+						circle((i*mapwidth+mapwidth/2)-3, (j*mapwidth+mapwidth/2)-5,2);
+					}
+					else if(manDir === 2)
+					{//上
+						arc(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth-3,mapwidth-3, TWO_PI - QUARTER_PI, PI + QUARTER_PI);
+						stroke(0); // Change the color
+						fill(0);
+						circle((i*mapwidth+mapwidth/2)-5, (j*mapwidth+mapwidth/2)+3,2);
+					}
+					else
+					{//下
+						arc(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth-3,mapwidth-3, PI-QUARTER_PI, QUARTER_PI);
+						stroke(0); // Change the color
+						fill(0);
+						circle((i*mapwidth+mapwidth/2)-5, (j*mapwidth+mapwidth/2)-3,2);
+					}
+					
+				}
+				else
+				{
+					//墙壁
+					stroke('purple'); // Change the color
+					//noFill();
+					fill('purple');
+					strokeWeight(1); // Make the points 1 pixels in size
+					rect(i*mapwidth, j*mapwidth, mapwidth, mapwidth);
+					//fill(0, 102, 153, 51);
+					//text(i*this.col+j,i*mapwidth, (j+1)*mapwidth);
+				}
+			}
+		}
+	}
+}
+
+//level 2
+class MapA{
+	
+	constructor(ln,col){
+		this.ln = ln;
+		this.col = col;
+		for(let i = 0; i < ln; i++)
+		{
+			for(let j = 0; j < col; j++)
+			{
+				dt[i*col+j] = 1;
+				dtcolr[i*col+j] = int(random(3));
+			}
+		}
+		//墙壁
+		dt[24] = 3;
+		for(let i=32;i<38;i++){
+			dt[i]=3;
+		}
+		for(let i=40;i<48;i++){
+			dt[i]=3;
+		}
+		for(let i=69;i<74;i++){
+			dt[i]=3;
+		}
+		for(let i=77;i<84;i++){
+			dt[i]=3;
+		}
+		dt[85] = 3;dt[89] = 3;dt[93] = 3;
+		dt[99] = 3;dt[101] = 3;dt[105] = 3;dt[107] = 3;dt[109] = 3;
+		dt[115] = 3;dt[117] = 3;dt[121] = 3;dt[123] = 3;dt[125] = 3;
+		dt[137] = 3;dt[139] = 3;dt[141] = 3;
+		dt[147] = 3;dt[149] = 3;dt[153] = 3;dt[155] = 3;dt[157] = 3;
+		
+		for(let i=160;i<164;i++){
+			dt[i]=3;
+		}
+		dt[165] = 3;dt[169] = 3;dt[173] = 3;
+		for(let i=181;i<186;i++){
+			dt[i]=3;
+		}
+		for(let i=189;i<192;i++){
+			dt[i]=3;
+		}
+		for(let i=208;i<214;i++){
+			dt[i]=3;
+		}
+		for(let i=216;i<224;i++){
+			dt[i]=3;
+		}
+		dt[232] = 3;
+		dt[manPosY*col+manPosX] = 2;
+	}
+	/* 根据键盘输入修改man的位置与方向 */
+	update(){
+		//console.log("update"+keyCode);
+		if (keyCode === LEFT_ARROW) 
+		{
+			manDir = 0;
+			if(manPosY===0){}
+			else
+			{
+				dt[manPosY*this.col+manPosX] = 0;
+				manPosY = manPosY - 1;
+				if(dt[manPosY*this.col+manPosX] === 3)
+				{
+					manPosY = manPosY + 1;
+					
+				}
+				else
+				{
+					if(dt[manPosY*this.col+manPosX] === 1)
+					{
+						//豆子 得分增加  颜色改变
+						mancolor = dtcolr[manPosY*this.col+manPosX]
+						score = score+1;
+					}
+				}
+				dt[manPosY*this.col+manPosX] = 2;
+			}
+		}
+		//方向键 向右
+		if (keyCode === RIGHT_ARROW) 
+		{
+			manDir = 1;
+			if(manPosY===(this.ln-1)){}
+			else
+			{
+				dt[manPosY*this.col+manPosX] = 0;
+				manPosY = manPosY + 1;
+				if(dt[manPosY*this.col+manPosX] === 3)
+				{
+					manPosY = manPosY - 1;
+					
+				}
+				else
+				{
+					if(dt[manPosY*this.col+manPosX] === 1)
+					{
+						//豆子 得分增加  颜色改变
+						mancolor = dtcolr[manPosY*this.col+manPosX]
+						score = score+1;
+					}
+					
+				}
+				dt[manPosY*this.col+manPosX] = 2;
+			}
+		}
+		//方向键 向上
+		if (keyCode === UP_ARROW) 
+		{
+			manDir = 2;
+			if(manPosX===0){}
+			else
+			{
+				dt[manPosY*this.col+manPosX] = 0;
+				manPosX = manPosX - 1;
+				if(dt[manPosY*this.col+manPosX] === 3)
+				{
+					manPosX = manPosX + 1;
+					
+				}
+				else
+				{
+					if(dt[manPosY*this.col+manPosX] === 1)
+					{
+						//豆子 得分增加  颜色改变
+						mancolor = dtcolr[manPosY*this.col+manPosX]
+						score = score+1;
+					}
+				}
+				dt[manPosY*this.col+manPosX] = 2;
+			}
+		}
+		//方向键 向下
+		if (keyCode === DOWN_ARROW) 
+		{
+			manDir = 3;
+			if(manPosX===(this.col-1)){}
+			else
+			{
+				dt[manPosY*this.col+manPosX] = 0;
+				manPosX = manPosX + 1;
+				if(dt[manPosY*this.col+manPosX] === 3)
+				{
+					manPosX = manPosX - 1;
+					
+				}
+				else
+				{
+					if(dt[manPosY*this.col+manPosX] === 1)
+					{
+						//豆子 得分增加  颜色改变
+						mancolor = dtcolr[manPosY*this.col+manPosX]
+						score = score+1;
+					}
+				}
+				dt[manPosY*this.col+manPosX] = 2;
+			}
+		}
+		keyCode = 0;
+	}
+	
+	draw(){
+		for(let i = 0; i < this.ln; i++)
+		{
+			for(let j = 0; j < this.col; j++)
+			{
+				if(dt[i*this.col+j] ===0)
+				{
+					//空
+				}
+				else if(dt[i*this.col+j] ===1)
+				{//豆子
+					stroke(beecolor[dtcolr[i*this.col+j]]); // Change the color
+					fill(beecolor[dtcolr[i*this.col+j]]);
+					strokeWeight(1); // Make the points 1 pixels in size
+					circle(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth/6);
+				}
+				else if(dt[i*this.col+j] ===2)
+				{//人
+					stroke(beecolor[mancolor]); // Change the color
+					fill(beecolor[mancolor]);
+					strokeWeight(1); // Make the points 1 pixels in size
+					//circle(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth-3);
+					if(manDir === 0)
+					{//左
+						arc(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth-3,mapwidth-3, PI+QUARTER_PI, PI - QUARTER_PI);
+						stroke(0); // Change the color
+						fill(0);
+						circle((i*mapwidth+mapwidth/2)+3, (j*mapwidth+mapwidth/2)-5,2);
+					}
+					else if(manDir === 1)
+					{//右
+						arc(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth-3,mapwidth-3, QUARTER_PI, TWO_PI - QUARTER_PI);
+						stroke(0); // Change the color
+						fill(0);
+						circle((i*mapwidth+mapwidth/2)-3, (j*mapwidth+mapwidth/2)-5,2);
+					}
+					else if(manDir === 2)
+					{//上
+						arc(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth-3,mapwidth-3, TWO_PI - QUARTER_PI, PI + QUARTER_PI);
+						stroke(0); // Change the color
+						fill(0);
+						circle((i*mapwidth+mapwidth/2)-5, (j*mapwidth+mapwidth/2)+3,2);
+					}
+					else
+					{//下
+						arc(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth-3,mapwidth-3, PI-QUARTER_PI, QUARTER_PI);
+						stroke(0); // Change the color
+						fill(0);
+						circle((i*mapwidth+mapwidth/2)-5, (j*mapwidth+mapwidth/2)-3,2);
+					}
+					
+				}
+				else
+				{
+					//墙壁
+					stroke('purple'); // Change the color
+					//noFill();
+					fill('purple');
+					strokeWeight(1); // Make the points 1 pixels in size
+					rect(i*mapwidth, j*mapwidth, mapwidth, mapwidth);
+					//fill(0, 102, 153, 51);
+					//text(i*this.col+j,i*mapwidth, (j+1)*mapwidth);
+				}
+			}
+		}
+	}
+}

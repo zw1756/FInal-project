@@ -7,11 +7,16 @@ let dtcolr=[];
 let manDir = 0;
 let manPosX = 0;
 let manPosY = 5;
+
+let badmanPosX = 6;
+let badmanPosY = 6;
+let badmanDir = -1;
 let beecolor = [];
 let mancolor = 0;
 let score = 0;
 let song1;
 let level = 1;
+let loseFlag = 0;
 /* map对应的物体  0 什么都没有  1 豆子  2 人  3 墙壁 */
 
 function preload() {
@@ -26,6 +31,7 @@ function setup() {
 	beecolor[1] = color(255, 0, 0);
 	beecolor[2] = color(0, 204, 0);
 	beecolor[3] = color(0, 0, 255);
+	beecolor[4] = color(0, 255, 255);
 	frameRate(5);
 	song1.loop();
 }
@@ -38,6 +44,7 @@ function draw() {
 	strokeWeight(1); // Make the points 1 pixels in size
 	rect(0,0, 480, 480);
 	map.update();
+	map.badmanupdate();
 	map.draw();
 	
 	//显示得分
@@ -57,6 +64,12 @@ function draw() {
 			noLoop();
 		}
 	}
+	if(loseFlag === 1){
+		fill(255);
+		textSize(38);
+		text("You LOSE", width/2-60, height/2);
+		noLoop();
+	}
 }
 
 class Map{
@@ -68,10 +81,16 @@ class Map{
 		{
 			for(let j = 0; j < col; j++)
 			{
-				dt[i*col+j] = 1;
+				/* dt[i*col+j] = int(random(2));; */
+				if(((i*col+j)%3)==0){
+					dt[i*col+j] = 0;
+				}else{
+					dt[i*col+j] = 1;
+				}
 				dtcolr[i*col+j] = int(random(3));
 			}
 		}
+		dt[badmanPosY*col+badmanPosX] = 4;
 		//墙壁
 		dt[1] = 3;dt[5] = 3;dt[7] = 3;dt[9] = 3;
 		dt[17] = 3;dt[21] = 3;dt[23] = 3;dt[25] = 3;dt[27] = 3;dt[29] = 3;
@@ -218,6 +237,117 @@ class Map{
 		keyCode = 0;
 	}
 	
+	/* */
+	badmanupdate(){
+		//console.log("update"+keyCode);
+		if(badmanDir === -1){
+			badmanDir = int(random(4));
+		}
+		badmanDir = int(random(4));
+		console.log(badmanDir)
+		if (badmanDir === 0) 
+		{
+			if(badmanPosY===0){
+				badmanDir === -1
+			}
+			else
+			{
+				dt[badmanPosY*this.col+badmanPosX] = 1;
+				badmanPosY = badmanPosY - 1;
+				if(dt[badmanPosY*this.col+badmanPosX] === 3)
+				{
+					badmanPosY = badmanPosY + 1;
+					badmanDir === -1
+				}
+				else if(dt[badmanPosY*this.col+badmanPosX] === 2)
+				{
+					loseFlag = 1;
+				}
+				else
+				{
+				}
+				dt[badmanPosY*this.col+badmanPosX] = 4;
+			}
+		}
+		//方向键 向右
+		if (badmanDir === 1) 
+		{
+			if(badmanPosY===(this.ln-1)){
+				badmanDir === -1
+			}
+			else
+			{
+				dt[badmanPosY*this.col+badmanPosX] = 1;
+				badmanPosY = badmanPosY + 1;
+				if(dt[badmanPosY*this.col+badmanPosX] === 3)
+				{
+					badmanPosY = badmanPosY - 1;
+					badmanDir === -1
+				}
+				else if(dt[badmanPosY*this.col+badmanPosX] === 2)
+				{
+					loseFlag = 1;
+				}
+				else
+				{
+					
+				}
+				dt[badmanPosY*this.col+badmanPosX] = 4;
+			}
+		}
+		//方向键 向上
+		if (badmanDir === 2) 
+		{
+			if(badmanPosX===0){
+				badmanDir === -1
+			}
+			else
+			{
+				dt[badmanPosY*this.col+badmanPosX] = 1;
+				badmanPosX = badmanPosX - 1;
+				if(dt[badmanPosY*this.col+badmanPosX] === 3)
+				{
+					badmanPosX = badmanPosX + 1;
+					badmanDir === -1
+				}
+				else if(dt[badmanPosY*this.col+badmanPosX] === 2)
+				{
+					loseFlag = 1;
+				}
+				else
+				{
+					
+				}
+				dt[badmanPosY*this.col+badmanPosX] = 4;
+			}
+		}
+		//方向键 向下
+		if (badmanDir === 3) 
+		{
+			if(badmanPosX===(this.col-1)){
+				badmanDir === -1
+			}
+			else
+			{
+				dt[badmanPosY*this.col+badmanPosX] = 1;
+				badmanPosX = badmanPosX + 1;
+				if(dt[badmanPosY*this.col+badmanPosX] === 3)
+				{
+					badmanPosX = badmanPosX - 1;
+					badmanDir === -1
+				}
+				else if(dt[badmanPosY*this.col+badmanPosX] === 2)
+				{
+					loseFlag = 1;
+				}
+				else
+				{
+				}
+				dt[badmanPosY*this.col+badmanPosX] = 4;
+			}
+		}
+	}
+	
 	draw(){
 		for(let i = 0; i < this.ln; i++)
 		{
@@ -270,6 +400,26 @@ class Map{
 					}
 					
 				}
+				else if(dt[i*this.col+j] ===4)
+				{//坏人
+					stroke(beecolor[4]); // Change the color
+					fill(beecolor[4]);
+					strokeWeight(1); // Make the points 1 pixels in size
+					let posx = i*mapwidth+mapwidth/2;
+					let posy = j*mapwidth+mapwidth/2;
+					//arc(i*mapwidth+mapwidth/2, j*mapwidth+mapwidth/2,mapwidth-3,mapwidth-3, 0, PI);
+					arc(posx, posy,mapwidth-3,mapwidth-3, 0, PI);
+					let posx1 = i*mapwidth;
+					let posy1 = j*mapwidth+mapwidth/2;
+					let posx2 = i*mapwidth+mapwidth/2;
+					let posy2 = j*mapwidth;
+					let posx3 = i*mapwidth+mapwidth;
+					let posy3 = j*mapwidth+mapwidth/2;
+					triangle(posx1, posy1, posx2, posy2, posx3, posy3); 
+					stroke(0); // Change the color
+					fill(0);
+					circle((i*mapwidth+mapwidth/2), (j*mapwidth+mapwidth/2),3); 
+				}
 				else
 				{
 					//墙壁
@@ -296,7 +446,11 @@ class MapA{
 		{
 			for(let j = 0; j < col; j++)
 			{
-				dt[i*col+j] = 1;
+				if(((i*col+j)%5)==0){
+					dt[i*col+j] = 0;
+				}else{
+					dt[i*col+j] = 1;
+				}
 				dtcolr[i*col+j] = int(random(3));
 			}
 		}
@@ -447,6 +601,116 @@ class MapA{
 			}
 		}
 		keyCode = 0;
+	}
+	
+	badmanupdate(){
+		//console.log("update"+keyCode);
+		if(badmanDir === -1){
+			
+		}
+		badmanDir = int(random(4));
+		if (badmanDir === 0) 
+		{
+			if(badmanPosY===0){
+				badmanDir === -1
+			}
+			else
+			{
+				dt[badmanPosY*this.col+badmanPosX] = 1;
+				badmanPosY = badmanPosY - 1;
+				if(dt[badmanPosY*this.col+badmanPosX] === 3)
+				{
+					badmanPosY = badmanPosY + 1;
+					badmanDir === -1
+				}
+				else if(dt[badmanPosY*this.col+badmanPosX] === 2)
+				{
+					loseFlag = 1;
+				}
+				else
+				{
+				}
+				dt[badmanPosY*this.col+badmanPosX] = 4;
+			}
+		}
+		//方向键 向右
+		if (badmanDir === 1) 
+		{
+			if(badmanPosY===(this.ln-1)){
+				badmanDir === -1
+			}
+			else
+			{
+				dt[badmanPosY*this.col+badmanPosX] = 1;
+				badmanPosY = badmanPosY + 1;
+				if(dt[badmanPosY*this.col+badmanPosX] === 3)
+				{
+					badmanPosY = badmanPosY - 1;
+					badmanDir === -1
+				}
+				else if(dt[badmanPosY*this.col+badmanPosX] === 2)
+				{
+					loseFlag = 1;
+				}
+				else
+				{
+					
+					
+				}
+				dt[badmanPosY*this.col+badmanPosX] = 4;
+			}
+		}
+		//方向键 向上
+		if (badmanDir === 2) 
+		{
+			if(badmanPosX===0){
+				badmanDir === -1
+			}
+			else
+			{
+				dt[badmanPosY*this.col+badmanPosX] = 1;
+				badmanPosX = badmanPosX - 1;
+				if(dt[badmanPosY*this.col+badmanPosX] === 3)
+				{
+					badmanPosX = badmanPosX + 1;
+					badmanDir === -1
+				}
+				else if(dt[badmanPosY*this.col+badmanPosX] === 2)
+				{
+					loseFlag = 1;
+				}
+				else
+				{
+					
+				}
+				dt[badmanPosY*this.col+badmanPosX] = 4;
+			}
+		}
+		//方向键 向下
+		if (badmanDir === 3) 
+		{
+			if(badmanPosX===(this.col-1)){
+				badmanDir === -1
+			}
+			else
+			{
+				dt[badmanPosY*this.col+badmanPosX] = 1;
+				badmanPosX = badmanPosX + 1;
+				if(dt[badmanPosY*this.col+badmanPosX] === 3)
+				{
+					badmanPosX = badmanPosX - 1;
+					badmanDir === -1
+				}
+				else if(dt[badmanPosY*this.col+badmanPosX] === 2)
+				{
+					loseFlag = 1;
+				}
+				else
+				{
+				}
+				dt[badmanPosY*this.col+badmanPosX] = 4;
+			}
+		}
 	}
 	
 	draw(){

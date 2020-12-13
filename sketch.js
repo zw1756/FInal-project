@@ -39,9 +39,9 @@ function setup() {
 /* loop draw function */
 function draw() {
 	background(0);
-	stroke('purple'); // Change the color
+	stroke('red'); // Change the color
 	noFill();
-	strokeWeight(1); // Make the points 1 pixels in size
+	strokeWeight(4); // Make the points 1 pixels in size
 	rect(0,0, 480, 480);
 	map.update();
 	map.badmanupdate();
